@@ -23,11 +23,12 @@ class Block(pygame.Rect):
 class Bullet(pygame.Rect):
     def __init__(self, x, y):
         super().__init__(x, y, 20, 20)
-        self.image = pygame.image.load(os.path.join(PATH, 'images/bullet_1.png'))
+        self.image = pygame.image.load(os.path.join(PATH, 'images/expl_1.png'))
         self.image = pygame.transform.scale(self.image, (15, 15))
         self.direction = None
         self.speed = 50
-        self.count = 0
+        self.count = None
+        self.sound = pygame.mixer.Sound('sounds/shot-1.wav')
     def move(self):
         if self.count != 0:
             window.blit(self.image, (self.x, self.y))
@@ -41,19 +42,23 @@ class Bullet(pygame.Rect):
                 self.x += self.speed
             self.count -= 1
             if self.count == 0:
-                self.stop
+                self.stop()
     def stop(self):
+        self.sound.play()
         self.count = 0
-        self.x = 0
+        self.x = 1000000
+        self.y = 1000000
+        
 
 class Panzar(pygame.Rect):
     def __init__(self, x, y):
         super().__init__(x * STEP, y * STEP, STEP, STEP)
         self.image = None
+        self.shot = None
         self.position = [x, y]
         self.bullet = Bullet(x, y)
         self.angle = 0  
-    def move(serlf):
+    def move(self):
         pass
     def blit(self):
         self.move()
@@ -68,12 +73,14 @@ class Panzar(pygame.Rect):
             self.bullet.y = self.y + STEP / 2 - 10
             self.bullet.count = 10
             self.bullet.direction = self.angle
+            self.shot.play()
 
 class Player1(Panzar):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.image = pygame.image.load(os.path.join(PATH, 'images/tank_x.png'))
         self.image = pygame.transform.scale(self.image, (STEP, STEP))
+        self.shot = pygame.mixer.Sound('sounds/shot-3.wav')
     def move(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
@@ -96,13 +103,15 @@ class Player1(Panzar):
                 self.x += STEP
                 self.position[0] += 1
             self.rotate_to(270)
-        elif keys[pygame.K_c]:
+        elif keys[pygame.K_3]:
             self.bullet_from_panzar()
+            # self.shot.play()
 class Player2(Panzar):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.image = pygame.image.load(os.path.join(PATH, 'images/tank_y.png'))
         self.image = pygame.transform.scale(self.image, (STEP, STEP))
+        self.shot = pygame.mixer.Sound('sounds/shot-4.wav')
     def move(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
@@ -125,15 +134,6 @@ class Player2(Panzar):
                 self.x += STEP
                 self.position[0] += 1
             self.rotate_to(270)
-        elif keys[pygame.K_c]:
+        elif keys[pygame.K_END]:
             self.bullet_from_panzar()
-
-# class Panzar:
-#     def __init__(self, x, y, width, hight):
-#         self.x = x
-#         self.y = y
-#         self.width = width
-#         self.hight = hight
-#         self.speed = 7
-#     def move(self):
-#         self.x -= self.speed
+            # self.shot.play()
